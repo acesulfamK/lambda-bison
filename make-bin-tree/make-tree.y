@@ -4,7 +4,7 @@
   #include <stdio.h>  /* printf. */
   #include <stdlib.h> /* abort. */
   #include <string.h> /* strcmp. */
-  #include "calc.h"
+  #include "tree.h"
   node home;
   node terminal;
 
@@ -18,7 +18,7 @@
 /* Generate YYSTYPE from the types used in %token and %type.  */
 %define api.value.type union
 %token <char> VAR
-%type  <char *> expr
+%type  <node *> expr
 
 /* Generate the parser description file (calc.output).  */
 %verbose
@@ -30,7 +30,7 @@
 %define parse.trace
 
 /* Formatting semantic values in debug traces.  */
-%printer { fprintf (yyo, "%s", $$); } <char *>;
+%printer { fprintf (yyo, "%c", $$->symbol); } <node *>;
 
 %% /* The grammar follows.  */
 input:
@@ -40,13 +40,18 @@ input:
 
 line:
 '\n'
-| expr '\n'  { printf ("%s\n", $1); }
+| expr '\n'  { print_tree($1); }
 | error '\n' { yyerrok; }
 ;
 
 expr:
-VAR {$$ = char2string($1);}
-| '(' expr '+' expr ')' { $$ = add_string($2,$4);}
+VAR {$$ = make_node($1);}
+| '(' expr '+' expr ')' { 
+  node *n = make_node('+');
+  add_child(n,$2,'l');
+  add_child(n,$4,'r');
+  $$ = n;
+  }
 ;
 
 %%

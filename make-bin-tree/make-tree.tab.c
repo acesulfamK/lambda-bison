@@ -64,21 +64,21 @@
 #define YYPULL 1
 
 /* "%code top" blocks.  */
-#line 1 "char-tree.y"
+#line 1 "make-tree.y"
 
   #include <assert.h>
   #include <ctype.h>  /* isdigit. */
   #include <stdio.h>  /* printf. */
   #include <stdlib.h> /* abort. */
   #include <string.h> /* strcmp. */
-  #include "calc.h"
+  #include "tree.h"
   node home;
   node terminal;
 
   int yylex (void);
   void yyerror (char const *);
 
-#line 82 "char-tree.tab.c"
+#line 82 "make-tree.tab.c"
 
 
 
@@ -132,9 +132,9 @@ extern int yydebug;
 union YYSTYPE
 {
   char VAR;                                /* VAR  */
-  char * expr;                             /* expr  */
+  node * expr;                             /* expr  */
 
-#line 138 "char-tree.tab.c"
+#line 138 "make-tree.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -730,9 +730,9 @@ yy_symbol_value_print (FILE *yyo,
   switch (yykind)
     {
     case YYSYMBOL_expr: /* expr  */
-#line 33 "char-tree.y"
-         { fprintf (yyo, "%s", ((*yyvaluep).expr)); }
-#line 736 "char-tree.tab.c"
+#line 33 "make-tree.y"
+         { fprintf (yyo, "%c", ((*yyvaluep).expr)->symbol); }
+#line 736 "make-tree.tab.c"
         break;
 
       default:
@@ -1341,31 +1341,36 @@ yyreduce:
   switch (yyn)
     {
   case 5: /* line: expr '\n'  */
-#line 43 "char-tree.y"
-             { printf ("%s\n", (yyvsp[-1].expr)); }
-#line 1347 "char-tree.tab.c"
+#line 43 "make-tree.y"
+             { print_tree((yyvsp[-1].expr)); }
+#line 1347 "make-tree.tab.c"
     break;
 
   case 6: /* line: error '\n'  */
-#line 44 "char-tree.y"
+#line 44 "make-tree.y"
              { yyerrok; }
-#line 1353 "char-tree.tab.c"
+#line 1353 "make-tree.tab.c"
     break;
 
   case 7: /* expr: VAR  */
-#line 48 "char-tree.y"
-    {(yyval.expr) = char2string((yyvsp[0].VAR));}
-#line 1359 "char-tree.tab.c"
+#line 48 "make-tree.y"
+    {(yyval.expr) = make_node((yyvsp[0].VAR));}
+#line 1359 "make-tree.tab.c"
     break;
 
   case 8: /* expr: '(' expr '+' expr ')'  */
-#line 49 "char-tree.y"
-                        { (yyval.expr) = add_string((yyvsp[-3].expr),(yyvsp[-1].expr));}
-#line 1365 "char-tree.tab.c"
+#line 49 "make-tree.y"
+                        { 
+  node *n = make_node('+');
+  add_child(n,(yyvsp[-3].expr),'l');
+  add_child(n,(yyvsp[-1].expr),'r');
+  (yyval.expr) = n;
+  }
+#line 1370 "make-tree.tab.c"
     break;
 
 
-#line 1369 "char-tree.tab.c"
+#line 1374 "make-tree.tab.c"
 
       default: break;
     }
@@ -1589,7 +1594,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 52 "char-tree.y"
+#line 57 "make-tree.y"
 
 
 int

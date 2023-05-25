@@ -1,5 +1,5 @@
-#ifndef CALC
-#define CALC
+#ifndef TREE
+#define TREE
 
 typedef struct Node
 {
@@ -15,6 +15,7 @@ extern node terminal;
 char *char2string(char x);
 char *add_string(char *x, char *y);
 
+node *make_node(char c);
 void set_symbol(node *x, char c);
 
 /* opt = 'l'or'r'. This func add chld to parent's opt side*/

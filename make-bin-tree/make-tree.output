@@ -34,7 +34,7 @@ Nonterminals, with rules where they appear
     line (10)
         on left: 3 4 5
         on right: 2
-    expr <char *> (11)
+    expr <node *> (11)
         on left: 6 7
         on right: 4 7
 

@@ -1,32 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "calc.h"
-
-char *char2string(char c)
-{
-	char *s = (char *)malloc(2);
-	*s = c;
-	s[1] = '\0';
-	return s;
-}
-
-char *add_string(char *x, char *y)
-{
-	char *s = (char *)malloc(strlen(x) + strlen(y) + 4);
-	strcpy(s, "[");
-	strcat(s, x);
-	strcat(s, ",");
-	strcat(s, y);
-	strcat(s, "]");
-	free(x);
-	free(y);
-	return s;
-}
+#include "tree.h"
 
 void set_symbol(node *x, char c)
 {
 	x->symbol = c;
+}
+
+node *make_node(char c)
+{
+	node *n = (node *)malloc(sizeof(node));
+	n->prnt = &home;
+	n->r = &terminal;
+	n->l = &terminal;
+	n->symbol = c;
+	return n;
 }
 
 /* opt = 'l'or'r'. This func add chld to parent's opt side*/

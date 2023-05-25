@@ -1,22 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-typedef struct Node node;
-struct Node
-{
-	struct Node *prnt;
-	struct Node *r;
-	struct Node *l;
-	char symbol;
-};
-
-node home;
-node terminal;
+#include "tree.h"
 
 void set_symbol(node *x, char c)
 {
 	x->symbol = c;
+}
+
+node *make_node(char c)
+{
+	node *n = (node *)malloc(sizeof(node));
+	n->prnt = &home;
+	n->r = &terminal;
+	n->l = &terminal;
+	n->symbol = c;
+	return n;
 }
 
 /* opt = 'l'or'r'. This func add chld to parent's opt side*/
@@ -140,30 +139,31 @@ void test_tree()
 	add_child_char((home.l)->r, 'e', 'l');
 	add_child_char(home.r, 'f', 'r');
 }
-
-int main()
-{
-	node home2;
-	home2.symbol = '%';
-	home2.r = &terminal;
-	home2.l = &terminal;
-
-	set_symbol(&home, '$');
-	home.r = &terminal;
-	home.l = &terminal;
-
-	print_symbol(&home);
-	printf("%zu\n", sizeof(node));
-	test_tree();
-	print_tree(&home);
-	printf("\n");
-
-	copy_tree(&home2, &home);
-	print_tree(&home2);
-	printf("\n");
-
-	copy_tree(((home2.l)->r)->l, &home);
-	print_tree(&home2);
-	printf("\n");
-	return 0;
-}
+//
+// int main()
+//{
+//	node home2;
+//	home2.symbol = '%';
+//	home2.r = &terminal;
+//	home2.l = &terminal;
+//
+//	set_symbol(&home, '$');
+//	home.r = &terminal;
+//	home.l = &terminal;
+//
+//	print_symbol(&home);
+//	printf("%zu\n", sizeof(node));
+//	test_tree();
+//	print_tree(&home);
+//	printf("\n");
+//
+//	copy_tree(&home2, &home);
+//	print_tree(&home2);
+//	printf("\n");
+//
+//	copy_tree(((home2.l)->r)->l, &home);
+//	print_tree(&home2);
+//	printf("\n");
+//	return 0;
+//}
+//
