@@ -1,0 +1,160 @@
+Grammar
+
+    0 $accept: input $end
+
+    1 input: ε
+    2      | input line
+
+    3 line: '\n'
+    4     | expr '\n'
+    5     | error '\n'
+
+    6 expr: VAR
+    7     | '(' expr '+' expr ')'
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    '\n' (10) 3 4 5
+    '(' (40) 7
+    ')' (41) 7
+    '+' (43) 7
+    error (256) 5
+    VAR <char> (258) 6
+
+
+Nonterminals, with rules where they appear
+
+    $accept (8)
+        on left: 0
+    input (9)
+        on left: 1 2
+        on right: 0 2
+    line (10)
+        on left: 3 4 5
+        on right: 2
+    expr <char *> (11)
+        on left: 6 7
+        on right: 4 7
+
+
+State 0
+
+    0 $accept: • input $end
+
+    $default  reduce using rule 1 (input)
+
+    input  go to state 1
+
+
+State 1
+
+    0 $accept: input • $end
+    2 input: input • line
+
+    $end   shift, and go to state 2
+    error  shift, and go to state 3
+    VAR    shift, and go to state 4
+    '\n'   shift, and go to state 5
+    '('    shift, and go to state 6
+
+    line  go to state 7
+    expr  go to state 8
+
+
+State 2
+
+    0 $accept: input $end •
+
+    $default  accept
+
+
+State 3
+
+    5 line: error • '\n'
+
+    '\n'  shift, and go to state 9
+
+
+State 4
+
+    6 expr: VAR •
+
+    $default  reduce using rule 6 (expr)
+
+
+State 5
+
+    3 line: '\n' •
+
+    $default  reduce using rule 3 (line)
+
+
+State 6
+
+    7 expr: '(' • expr '+' expr ')'
+
+    VAR  shift, and go to state 4
+    '('  shift, and go to state 6
+
+    expr  go to state 10
+
+
+State 7
+
+    2 input: input line •
+
+    $default  reduce using rule 2 (input)
+
+
+State 8
+
+    4 line: expr • '\n'
+
+    '\n'  shift, and go to state 11
+
+
+State 9
+
+    5 line: error '\n' •
+
+    $default  reduce using rule 5 (line)
+
+
+State 10
+
+    7 expr: '(' expr • '+' expr ')'
+
+    '+'  shift, and go to state 12
+
+
+State 11
+
+    4 line: expr '\n' •
+
+    $default  reduce using rule 4 (line)
+
+
+State 12
+
+    7 expr: '(' expr '+' • expr ')'
+
+    VAR  shift, and go to state 4
+    '('  shift, and go to state 6
+
+    expr  go to state 13
+
+
+State 13
+
+    7 expr: '(' expr '+' expr • ')'
+
+    ')'  shift, and go to state 14
+
+
+State 14
+
+    7 expr: '(' expr '+' expr ')' •
+
+    $default  reduce using rule 7 (expr)

@@ -1,6 +1,24 @@
 # bison構文解析を用いたラムダ計算コンパイラ(未完成)
 
+# BNF
+
+expr :: = ( expr )
+    | VAR
+    | lfex expr 
+    | L abv . expr
+lfex ::= expr
+abv ::= VAR abv
+    | VAR
+
+
 # ファイル構成
+
+- parse-tree: `(+)`を用いて`[,]`
+例
+```
+input: (1+(2+3))
+output: [1,[2,3]]
+```
 
 - only-plus: bison exampleのcalc.yから間引いて、数値+数値、の形をしたコードのみ計算するようにしたもの。.gvファイルを、graphvizで見るために単純なコードにした。これを改変してstring+stringで文字列を結合するようにしたのが、plus-to-string。
 
