@@ -57,7 +57,8 @@ expr: abst
 | appl
 ;
 
-abst: '\\' abstvars '.' abst 
+abst: '(' abst ')' {$$ = $2;}
+| '\\' abstvars '.' abst 
 {
   node *i;
   for(i = $2;i->r != &terminal; i = i->r);
@@ -72,6 +73,13 @@ abst: '\\' abstvars '.' abst
   add_child(i,$4,'r');
   $$ = $2;
 }
+| '\\' abstvars '.' VAR
+{
+  node *i;
+  for(i = $2;i->r != &terminal; i = i->r);
+  add_child(i,make_node($4),'r');
+  $$ = $2;
+}
 
 
 abstvars: VAR {
@@ -82,12 +90,22 @@ abstvars: VAR {
 | abstvars VAR
 {
   node *i;
+  node *ab = make_node('.');
   for(i = $1;i->r !=&terminal;i=i->r);
-  i->r = make_node($2);
-  $$ = $2;
+  add_child(i,ab,'r');
+  add_child(ab,make_node($2),'l');
+  $$ = $1;
 }
 
-appl: VAR {$$ = make_node($1);}
+appl: '(' appl ')' {$$ = $2;}
+|VAR VAR  %prec APPL
+{
+  node *n = make_node('&');
+  add_child(n,make_node($1),'l');
+  add_child(n,make_node($2),'r');
+  $$ = n;
+}
+
 | abst abst %prec APPL
 {
   node *n = make_node('&');
@@ -111,6 +129,41 @@ appl: VAR {$$ = make_node($1);}
   add_child(n,$4,'r');
   $$ = n;
 }
+
+| VAR '(' appl ')' %prec APPL
+{
+  node *n = make_node('&');
+  add_child(n,make_node($1),'l');
+  add_child(n,$3,'r');
+  $$ = n;
+}
+
+| VAR abst %prec APPL
+{
+  node *n = make_node('&');
+  add_child(n,make_node($1),'l');
+  add_child(n,$2,'r');
+  $$ = n;
+}
+
+| appl VAR %prec APPL
+{
+  node *n = make_node('&');
+  add_child(n,$1,'l');
+  add_child(n,make_node($2),'r');
+  $$ = n;
+}
+
+| '(' abst ')' VAR %prec APPL
+{
+  node *n = make_node('&');
+  add_child(n,$2,'l');
+  add_child(n,make_node($4),'r');
+  $$ = n;
+}
+;
+
+
   
 
 %%
