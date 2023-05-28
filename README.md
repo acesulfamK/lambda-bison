@@ -12,6 +12,11 @@ abv ::= VAR abv
 
 
 # ファイル構成
+
+- lambda-tree-uni-var: 変数の連続applyに括弧はいらないが、abtractの際に変数は1文字しか置くことができない。
+
+-strict-lambda-bin-tree: 定数、変数同士のapplyでも括弧が必要なラムダ式
+
 - make-tree: (,+,) を用いた構文から、構造体で定義されたノード同士の参照関係からなる2分木を生成する。
  
 

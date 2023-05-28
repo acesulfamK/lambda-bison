@@ -1,0 +1,310 @@
+State 22 conflicts: 1 shift/reduce
+State 23 conflicts: 1 shift/reduce
+State 25 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: input $end
+
+    1 input: ε
+    2      | input line
+
+    3 line: '\n'
+    4     | expr '\n'
+    5     | error '\n'
+
+    6 expr: abst
+    7     | appl
+
+    8 abst: '\\' abstvars '.' abst
+    9     | '\\' abstvars '.' appl
+
+   10 abstvars: VAR
+   11         | abstvars VAR
+
+   12 appl: VAR
+   13     | abst abst
+   14     | appl abst
+   15     | '(' abst ')' appl
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    '\n' (10) 3 4 5
+    '(' (40) 15
+    ')' (41) 15
+    '.' (46) 8 9
+    '\\' (92) 8 9
+    error (256) 5
+    VAR <char> (258) 10 11 12
+    APPL (259)
+
+
+Nonterminals, with rules where they appear
+
+    $accept (10)
+        on left: 0
+    input (11)
+        on left: 1 2
+        on right: 0 2
+    line (12)
+        on left: 3 4 5
+        on right: 2
+    expr <node *> (13)
+        on left: 6 7
+        on right: 4
+    abst <node *> (14)
+        on left: 8 9
+        on right: 6 8 13 14 15
+    abstvars <node *> (15)
+        on left: 10 11
+        on right: 8 9 11
+    appl <node *> (16)
+        on left: 12 13 14 15
+        on right: 7 9 14 15
+
+
+State 0
+
+    0 $accept: • input $end
+
+    $default  reduce using rule 1 (input)
+
+    input  go to state 1
+
+
+State 1
+
+    0 $accept: input • $end
+    2 input: input • line
+
+    $end   shift, and go to state 2
+    error  shift, and go to state 3
+    VAR    shift, and go to state 4
+    '\n'   shift, and go to state 5
+    '\\'   shift, and go to state 6
+    '('    shift, and go to state 7
+
+    line  go to state 8
+    expr  go to state 9
+    abst  go to state 10
+    appl  go to state 11
+
+
+State 2
+
+    0 $accept: input $end •
+
+    $default  accept
+
+
+State 3
+
+    5 line: error • '\n'
+
+    '\n'  shift, and go to state 12
+
+
+State 4
+
+   12 appl: VAR •
+
+    $default  reduce using rule 12 (appl)
+
+
+State 5
+
+    3 line: '\n' •
+
+    $default  reduce using rule 3 (line)
+
+
+State 6
+
+    8 abst: '\\' • abstvars '.' abst
+    9     | '\\' • abstvars '.' appl
+
+    VAR  shift, and go to state 13
+
+    abstvars  go to state 14
+
+
+State 7
+
+   15 appl: '(' • abst ')' appl
+
+    '\\'  shift, and go to state 6
+
+    abst  go to state 15
+
+
+State 8
+
+    2 input: input line •
+
+    $default  reduce using rule 2 (input)
+
+
+State 9
+
+    4 line: expr • '\n'
+
+    '\n'  shift, and go to state 16
+
+
+State 10
+
+    6 expr: abst •
+   13 appl: abst • abst
+
+    '\\'  shift, and go to state 6
+
+    $default  reduce using rule 6 (expr)
+
+    abst  go to state 17
+
+
+State 11
+
+    7 expr: appl •
+   14 appl: appl • abst
+
+    '\\'  shift, and go to state 6
+
+    $default  reduce using rule 7 (expr)
+
+    abst  go to state 18
+
+
+State 12
+
+    5 line: error '\n' •
+
+    $default  reduce using rule 5 (line)
+
+
+State 13
+
+   10 abstvars: VAR •
+
+    $default  reduce using rule 10 (abstvars)
+
+
+State 14
+
+    8 abst: '\\' abstvars • '.' abst
+    9     | '\\' abstvars • '.' appl
+   11 abstvars: abstvars • VAR
+
+    VAR  shift, and go to state 19
+    '.'  shift, and go to state 20
+
+
+State 15
+
+   15 appl: '(' abst • ')' appl
+
+    ')'  shift, and go to state 21
+
+
+State 16
+
+    4 line: expr '\n' •
+
+    $default  reduce using rule 4 (line)
+
+
+State 17
+
+   13 appl: abst abst •
+
+    $default  reduce using rule 13 (appl)
+
+
+State 18
+
+   14 appl: appl abst •
+
+    $default  reduce using rule 14 (appl)
+
+
+State 19
+
+   11 abstvars: abstvars VAR •
+
+    $default  reduce using rule 11 (abstvars)
+
+
+State 20
+
+    8 abst: '\\' abstvars '.' • abst
+    9     | '\\' abstvars '.' • appl
+
+    VAR   shift, and go to state 4
+    '\\'  shift, and go to state 6
+    '('   shift, and go to state 7
+
+    abst  go to state 22
+    appl  go to state 23
+
+
+State 21
+
+   15 appl: '(' abst ')' • appl
+
+    VAR   shift, and go to state 4
+    '\\'  shift, and go to state 6
+    '('   shift, and go to state 7
+
+    abst  go to state 24
+    appl  go to state 25
+
+
+State 22
+
+    8 abst: '\\' abstvars '.' abst •
+   13 appl: abst • abst
+
+    '\\'  shift, and go to state 6
+
+    '\\'      [reduce using rule 8 (abst)]
+    $default  reduce using rule 8 (abst)
+
+    abst  go to state 17
+
+
+State 23
+
+    9 abst: '\\' abstvars '.' appl •
+   14 appl: appl • abst
+
+    '\\'  shift, and go to state 6
+
+    '\\'      [reduce using rule 9 (abst)]
+    $default  reduce using rule 9 (abst)
+
+    abst  go to state 18
+
+
+State 24
+
+   13 appl: abst • abst
+
+    '\\'  shift, and go to state 6
+
+    abst  go to state 17
+
+
+State 25
+
+   14 appl: appl • abst
+   15     | '(' abst ')' appl •
+
+    '\\'  shift, and go to state 6
+
+    '\\'      [reduce using rule 15 (appl)]
+    $default  reduce using rule 15 (appl)
+
+    abst  go to state 18
