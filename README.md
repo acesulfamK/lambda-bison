@@ -14,6 +14,8 @@ abv ::= VAR abv
 # ファイル構成
 
 
+- flex-file-io: flexのdemo。inputファイルの構文を解析しoutputに出す。
+
 - lambda-tree: ラムダ計算式 -> 構文木の完成形
 できる計算
 ```
