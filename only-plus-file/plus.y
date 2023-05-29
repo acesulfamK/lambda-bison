@@ -5,10 +5,9 @@
   #include <stdlib.h> /* abort. */
   #include <string.h> /* strcmp. */
 
+  FILE *file;
   int yylex (void);
   void yyerror (char const *);
-  extern FILE* yyin;
-  extern FILE* yyout;
 }
 
 //%define api.header.include {"calc.h"}
@@ -54,18 +53,18 @@ yylex (void)
   int c;
 
   /* Ignore white space, get first nonwhite character.  */
-  while ((c = getchar ()) == ' ' || c == '\t')
+  while ((c = fgetc(file)) == ' ' || c == '\t')
     continue;
 
-  if (c == EOF)
+  if (c == EOF){
+    fclose(file);
     return 0;
+  }
 
   /* Char starts a number => parse the number.         */
   if (c == '.' || isdigit (c))
     {
-      ungetc (c, stdin);
-      if (scanf ("%lf", &yylval.NUM) != 1)
-        abort ();
+      yylval.NUM = c - '0';
       return NUM;
     }
 
@@ -83,24 +82,16 @@ yyerror (char const *s)
 int
 main (int argc, char const* argv[])
 {
-
-  /* yyinをファイル入力に切り替え */
-  if(argc>2){
-    if((yyin = fopen( argv[1], "r")) == NULL){
-       fprintf(stderr,"Can't open a input file!\n");
-       return 1;
-    }
-
-
-    /* yyoutをファイル出力に切り替え */
-    if((yyout = fopen( argv[2], "w")) == NULL){
-       fprintf(stderr,"Can't open a output file!\n");
-       return 1;
-    }
-  } else {
-    printf("The number of arg is not sufficient");
+  if(argc != 2 ){
+    printf("There are not args\n");
+    return 1;
   }
-
+  
+  file =  fopen(argv[1],"r");
+  if (file == NULL) {
+      printf("Cannot open file\n");
+      return 1;
+  }
 
   /* Enable parse traces on option -p.  */
   for (int i = 1; i < argc; ++i)

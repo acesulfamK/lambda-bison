@@ -14,6 +14,11 @@ abv ::= VAR abv
 # ファイル構成
 
 
+- only-plus-file: 足し算の演算のみを行うプログラムonly-plusに、ファイルからの入力が可能になった。ファイルの読み込みは以下のよう
+```
+./a.out <ファイル名>
+```
+
 - flex-file-io: flexのdemo。inputファイルの構文を解析しoutputに出す。
 
 - lambda-tree: ラムダ計算式 -> 構文木の完成形

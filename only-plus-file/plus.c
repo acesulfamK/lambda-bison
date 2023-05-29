@@ -72,11 +72,10 @@
   #include <stdlib.h> /* abort. */
   #include <string.h> /* strcmp. */
 
-  FILE *file;
   int yylex (void);
   void yyerror (char const *);
 
-#line 80 "plus.tab.c"
+#line 79 "plus.c"
 
 
 
@@ -102,7 +101,52 @@
 #  endif
 # endif
 
-#include "plus.tab.h"
+
+/* Debug traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 1
+#endif
+#if YYDEBUG
+extern int yydebug;
+#endif
+
+/* Token kinds.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+  enum yytokentype
+  {
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    NUM = 258                      /* "number"  */
+  };
+  typedef enum yytokentype yytoken_kind_t;
+#endif
+
+/* Value type.  */
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+union YYSTYPE
+{
+  double NUM;                              /* "number"  */
+  double expr;                             /* expr  */
+
+#line 135 "plus.c"
+
+};
+typedef union YYSTYPE YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
+#endif
+
+
+extern YYSTYPE yylval;
+
+
+int yyparse (void);
+
+
+
 /* Symbol kind.  */
 enum yysymbol_kind_t
 {
@@ -502,7 +546,7 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    34,    34,    35,    39,    40,    41,    45
+       0,    33,    33,    34,    38,    39,    40,    44
 };
 #endif
 
@@ -679,15 +723,15 @@ yy_symbol_value_print (FILE *yyo,
   switch (yykind)
     {
     case YYSYMBOL_NUM: /* "number"  */
-#line 30 "plus.y"
+#line 29 "plus.y"
          { fprintf (yyo, "%g", ((*yyvaluep).NUM)); }
-#line 685 "plus.tab.c"
+#line 729 "plus.c"
         break;
 
     case YYSYMBOL_expr: /* expr  */
-#line 30 "plus.y"
+#line 29 "plus.y"
          { fprintf (yyo, "%g", ((*yyvaluep).expr)); }
-#line 691 "plus.tab.c"
+#line 735 "plus.c"
         break;
 
       default:
@@ -1296,25 +1340,25 @@ yyreduce:
   switch (yyn)
     {
   case 5: /* line: expr '\n'  */
-#line 40 "plus.y"
+#line 39 "plus.y"
              { printf ("%.10g\n", (yyvsp[-1].expr)); }
-#line 1302 "plus.tab.c"
+#line 1346 "plus.c"
     break;
 
   case 6: /* line: error '\n'  */
-#line 41 "plus.y"
+#line 40 "plus.y"
              { yyerrok; }
-#line 1308 "plus.tab.c"
+#line 1352 "plus.c"
     break;
 
   case 7: /* expr: "number" '+' "number"  */
-#line 45 "plus.y"
+#line 44 "plus.y"
               { (yyval.expr) = (yyvsp[-2].NUM) + (yyvsp[0].NUM); }
-#line 1314 "plus.tab.c"
+#line 1358 "plus.c"
     break;
 
 
-#line 1318 "plus.tab.c"
+#line 1362 "plus.c"
 
       default: break;
     }
@@ -1538,7 +1582,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 48 "plus.y"
+#line 47 "plus.y"
 
 
 int
@@ -1547,24 +1591,22 @@ yylex (void)
   int c;
 
   /* Ignore white space, get first nonwhite character.  */
-  while ((c = fgetc(file)) == ' ' || c == '\t')
+  while ((c = getchar ()) == ' ' || c == '\t')
     continue;
 
-  if (c == EOF){
-    fclose(file);
+  if (c == EOF)
     return 0;
-  }
 
   /* Char starts a number => parse the number.         */
   if (c == '.' || isdigit (c))
     {
-      yylval.NUM = c - '0';
-      printf("NUM : %d",c);
+      ungetc (c, stdin);
+      if (scanf ("%lf", &yylval.NUM) != 1)
+        abort ();
       return NUM;
     }
 
   /* Any other character is a token by itself.        */
-  printf("char : %c",c);
   return c;
 }
 
@@ -1578,17 +1620,6 @@ yyerror (char const *s)
 int
 main (int argc, char const* argv[])
 {
-  if(argc != 2 ){
-    printf("There are not arg\n");
-    return 1;
-  }
-  
-  file =  fopen(argv[1],"r");
-  if (file == NULL) {
-      printf("Cannot open file\n");
-      return 1;
-  }
-
   /* Enable parse traces on option -p.  */
   for (int i = 1; i < argc; ++i)
     if (!strcmp (argv[i], "-p"))
