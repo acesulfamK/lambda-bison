@@ -5,11 +5,12 @@
   #include <stdlib.h> /* abort. */
   #include <string.h> /* strcmp. */
   #include "tree.h"
+  #include "header.h"
 
   node home;
   node terminal;
 
-  char input[80];
+  char *input;
   char *pointer;
   int yylex (void);
   void yyerror (char const *);
@@ -22,6 +23,7 @@
 /* Generate YYSTYPE from the types used in %token and %type.  */
 %define api.value.type union
 %token <char> VAR
+%token <char> LAMB
 %type <node *> abstvars
 %type  <node *> expr
 %type <node *> abst
@@ -46,18 +48,13 @@
 
 %% /* The grammar follows.  */
 
-input:
-  %empty
-| input line
-;
-
-line:
-'\n'
-| expr '\n'  { 
+input :
+expr { 
   print_tree($1);
+  home.r = $1;
   printf("\n"); 
-  fclose(file); }
-| error '\n' { yyerrok; }
+  }
+| error { yyerrok; }
 ;
 
 expr: abst
@@ -66,7 +63,7 @@ expr: abst
 ;
 
 abst: '(' abst ')' {$$ = $2;}
-| '\\' abstvars '.' abst 
+| LAMB abstvars '.' abst 
 {
   node *i;
   for(i = $2;i->r != &terminal; i = i->r);
@@ -74,14 +71,14 @@ abst: '(' abst ')' {$$ = $2;}
   $$ = $2;
 }
 
-| '\\' abstvars '.' appl 
+| LAMB abstvars '.' appl 
 {
   node *i;
   for(i = $2;i->r != &terminal; i = i->r);
   add_child(i,$4,'r');
   $$ = $2;
 }
-| '\\' abstvars '.' vars
+| LAMB abstvars '.' vars
 {
   node *i;
   for(i = $2;i->r != &terminal; i = i->r);
@@ -198,13 +195,16 @@ yylex (void)
 
   /* Char starts a number => parse the number.         */
   switch(c){
-    case '.':
     case '\\':
+    case '@':
+      return LAMB;
+      break;
+    case '.':
     case ')':
     case '(':
     case '\n':
-    printf("%c:special\n",c);
-    return c;
+      printf("%c:special\n",c);
+      return c;
   }
   yylval.VAR = c;
   printf("%c:VAR\n",c);
@@ -219,23 +219,9 @@ yyerror (char const *s)
   fprintf (stderr, "%s\n", s);
 }
 
-int
-main (int argc, char const* argv[])
+
+int bison_parse()
 { 
   pointer = input;
-  if(argc == 2){
-    file  = fopen(argv[1],"r");
-    if(fgets(input,99,file)== NULL){
-      printf("fgets error");
-      exit(1);
-    }
-  } else {
-    printf("Args are invalid\n");
-  }
-
-  /* Enable parse traces on option -p.  */
-  for (int i = 1; i < argc; ++i)
-    if (!strcmp (argv[i], "-p"))
-      yydebug = 1;
   return yyparse ();
 }
