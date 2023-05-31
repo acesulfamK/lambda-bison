@@ -6,7 +6,7 @@
   #include <string.h> /* strcmp. */
   #include "tree.h"
 
-  node home;
+  node *head;
   node terminal;
 
   int yylex (void);
@@ -51,7 +51,11 @@ input:
 
 line:
 '\n'
-| expr '\n'  { print_tree($1);printf("\n"); fclose(file); }
+| expr '\n'
+{ 
+  print_tree($1);
+  printf("\n"); 
+}
 | error '\n' { yyerrok; }
 ;
 
@@ -180,7 +184,7 @@ yylex (void)
   /* Ignore white space, get first nonwhite character.  */
   c = fgetc(file);
 
-  while (c == ' ' || c == '\t'){
+  while (c == ' ' || c == '\t' ){
     c = fgetc(file);
     continue;
   }
@@ -220,6 +224,7 @@ main (int argc, char const* argv[])
   } else {
     printf("Args are invalid\n");
   }
+  fclose(file); 
 
   /* Enable parse traces on option -p.  */
   for (int i = 1; i < argc; ++i)

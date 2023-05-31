@@ -5,12 +5,11 @@
   #include <stdlib.h> /* abort. */
   #include <string.h> /* strcmp. */
   #include "tree.h"
-  #include "header.h"
 
   node home;
   node terminal;
 
-  char *input;
+  char input[80];
   char *pointer;
   int yylex (void);
   void yyerror (char const *);
@@ -23,7 +22,6 @@
 /* Generate YYSTYPE from the types used in %token and %type.  */
 %define api.value.type union
 %token <char> VAR
-%token <char> LAMB
 %type <node *> abstvars
 %type  <node *> expr
 %type <node *> abst
@@ -48,13 +46,20 @@
 
 %% /* The grammar follows.  */
 
-input :
-expr { 
+input:
+  %empty
+| input line
+;
+
+line:
+'\n'
+| expr '\n'  { 
   print_tree($1);
-  home.r = $1;
   printf("\n"); 
+  fclose(file); 
   }
-| error { yyerrok; }
+| error '\n' { yyerrok;
+  fclose(file); }
 ;
 
 expr: abst
@@ -63,7 +68,7 @@ expr: abst
 ;
 
 abst: '(' abst ')' {$$ = $2;}
-| LAMB abstvars '.' abst 
+| '@' abstvars '.' abst 
 {
   node *i;
   for(i = $2;i->r != &terminal; i = i->r);
@@ -71,36 +76,38 @@ abst: '(' abst ')' {$$ = $2;}
   $$ = $2;
 }
 
-| LAMB abstvars '.' appl 
+| '@' abstvars '.' appl 
 {
   node *i;
   for(i = $2;i->r != &terminal; i = i->r);
   add_child(i,$4,'r');
   $$ = $2;
 }
-| LAMB abstvars '.' vars
+| '@' abstvars '.' vars
 {
   node *i;
   for(i = $2;i->r != &terminal; i = i->r);
   add_child(i,$4,'r');
   $$ = $2;
 }
+;
 
 
-abstvars: vars {
+abstvars: VAR {
   node *n = make_node('.');
-  add_child(n,$1,'l');
+  add_child(n,make_node($1),'l');
   $$ = n;
 }
-| abstvars vars
+| abstvars VAR 
 {
   node *i;
   node *ab = make_node('.');
   for(i = $1;i->r !=&terminal;i=i->r);
   add_child(i,ab,'r');
-  add_child(ab,$2,'l');
+  add_child(ab,make_node($2),'l');
   $$ = $1;
 }
+;
 
 appl: '(' appl ')' {$$ = $2;}
 |vars vars %prec APPL
@@ -195,16 +202,13 @@ yylex (void)
 
   /* Char starts a number => parse the number.         */
   switch(c){
-    case '\\':
-    case '@':
-      return LAMB;
-      break;
     case '.':
+    case '@':
     case ')':
     case '(':
     case '\n':
-      printf("%c:special\n",c);
-      return c;
+    printf("%c:special\n",c);
+    return c;
   }
   yylval.VAR = c;
   printf("%c:VAR\n",c);
@@ -219,9 +223,23 @@ yyerror (char const *s)
   fprintf (stderr, "%s\n", s);
 }
 
-
-int bison_parse()
+int
+main (int argc, char const* argv[])
 { 
   pointer = input;
+  if(argc == 2){
+    file  = fopen(argv[1],"r");
+    if(fgets(input,99,file)== NULL){
+      printf("fgets error");
+      exit(1);
+    }
+  } else {
+    printf("Args are invalid\n");
+  }
+
+  /* Enable parse traces on option -p.  */
+  for (int i = 1; i < argc; ++i)
+    if (!strcmp (argv[i], "-p"))
+      yydebug = 1;
   return yyparse ();
 }

@@ -73,7 +73,7 @@
   #include <string.h> /* strcmp. */
   #include "tree.h"
 
-  node home;
+  node *head;
   node terminal;
 
   int yylex (void);
@@ -564,9 +564,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    48,    48,    49,    53,    54,    55,    58,    59,    60,
-      63,    64,    72,    79,    88,    93,   103,   104,   112,   120,
-     128,   136,   144,   152,   160,   169,   170
+       0,    48,    48,    49,    53,    54,    59,    62,    63,    64,
+      67,    68,    76,    83,    92,    97,   107,   108,   116,   124,
+     132,   140,   148,   156,   164,   173,   174
 };
 #endif
 
@@ -1410,68 +1410,71 @@ yyreduce:
   switch (yyn)
     {
   case 5: /* line: expr '\n'  */
-#line 54 "make-tree.y"
-             { print_tree((yyvsp[-1].expr));printf("\n"); fclose(file); }
-#line 1416 "make-tree.tab.c"
+#line 55 "make-tree.y"
+{ 
+  print_tree((yyvsp[-1].expr));
+  printf("\n"); 
+}
+#line 1419 "make-tree.tab.c"
     break;
 
   case 6: /* line: error '\n'  */
-#line 55 "make-tree.y"
+#line 59 "make-tree.y"
              { yyerrok; }
-#line 1422 "make-tree.tab.c"
+#line 1425 "make-tree.tab.c"
     break;
 
   case 10: /* abst: '(' abst ')'  */
-#line 63 "make-tree.y"
+#line 67 "make-tree.y"
                    {(yyval.abst) = (yyvsp[-1].abst);}
-#line 1428 "make-tree.tab.c"
+#line 1431 "make-tree.tab.c"
     break;
 
   case 11: /* abst: '\\' abstvars '.' abst  */
-#line 65 "make-tree.y"
+#line 69 "make-tree.y"
 {
   node *i;
   for(i = (yyvsp[-2].abstvars);i->r != &terminal; i = i->r);
   add_child(i,(yyvsp[0].abst),'r');
   (yyval.abst) = (yyvsp[-2].abstvars);
 }
-#line 1439 "make-tree.tab.c"
+#line 1442 "make-tree.tab.c"
     break;
 
   case 12: /* abst: '\\' abstvars '.' appl  */
-#line 73 "make-tree.y"
+#line 77 "make-tree.y"
 {
   node *i;
   for(i = (yyvsp[-2].abstvars);i->r != &terminal; i = i->r);
   add_child(i,(yyvsp[0].appl),'r');
   (yyval.abst) = (yyvsp[-2].abstvars);
 }
-#line 1450 "make-tree.tab.c"
+#line 1453 "make-tree.tab.c"
     break;
 
   case 13: /* abst: '\\' abstvars '.' vars  */
-#line 80 "make-tree.y"
+#line 84 "make-tree.y"
 {
   node *i;
   for(i = (yyvsp[-2].abstvars);i->r != &terminal; i = i->r);
   add_child(i,(yyvsp[0].vars),'r');
   (yyval.abst) = (yyvsp[-2].abstvars);
 }
-#line 1461 "make-tree.tab.c"
+#line 1464 "make-tree.tab.c"
     break;
 
   case 14: /* abstvars: vars  */
-#line 88 "make-tree.y"
+#line 92 "make-tree.y"
                {
   node *n = make_node('.');
   add_child(n,(yyvsp[0].vars),'l');
   (yyval.abstvars) = n;
 }
-#line 1471 "make-tree.tab.c"
+#line 1474 "make-tree.tab.c"
     break;
 
   case 15: /* abstvars: abstvars vars  */
-#line 94 "make-tree.y"
+#line 98 "make-tree.y"
 {
   node *i;
   node *ab = make_node('.');
@@ -1480,117 +1483,117 @@ yyreduce:
   add_child(ab,(yyvsp[0].vars),'l');
   (yyval.abstvars) = (yyvsp[-1].abstvars);
 }
-#line 1484 "make-tree.tab.c"
+#line 1487 "make-tree.tab.c"
     break;
 
   case 16: /* appl: '(' appl ')'  */
-#line 103 "make-tree.y"
+#line 107 "make-tree.y"
                    {(yyval.appl) = (yyvsp[-1].appl);}
-#line 1490 "make-tree.tab.c"
+#line 1493 "make-tree.tab.c"
     break;
 
   case 17: /* appl: vars vars  */
-#line 105 "make-tree.y"
+#line 109 "make-tree.y"
 {
   node *n = make_node('&');
   add_child(n,(yyvsp[-1].vars),'l');
   add_child(n,(yyvsp[0].vars),'r');
   (yyval.appl) = n;
 }
-#line 1501 "make-tree.tab.c"
+#line 1504 "make-tree.tab.c"
     break;
 
   case 18: /* appl: abst abst  */
-#line 113 "make-tree.y"
+#line 117 "make-tree.y"
 {
   node *n = make_node('&');
   add_child(n,(yyvsp[-1].abst),'l');
   add_child(n,(yyvsp[0].abst),'r');
   (yyval.appl) = n;
 }
-#line 1512 "make-tree.tab.c"
+#line 1515 "make-tree.tab.c"
     break;
 
   case 19: /* appl: appl abst  */
-#line 121 "make-tree.y"
+#line 125 "make-tree.y"
 {
   node *n = make_node('&');
   add_child(n,(yyvsp[-1].appl),'l');
   add_child(n,(yyvsp[0].abst),'r');
   (yyval.appl) = n;
 }
-#line 1523 "make-tree.tab.c"
+#line 1526 "make-tree.tab.c"
     break;
 
   case 20: /* appl: '(' abst ')' appl  */
-#line 129 "make-tree.y"
+#line 133 "make-tree.y"
 {
   node *n = make_node('&');
   add_child(n,(yyvsp[-2].abst),'l');
   add_child(n,(yyvsp[0].appl),'r');
   (yyval.appl) = n;
 }
-#line 1534 "make-tree.tab.c"
+#line 1537 "make-tree.tab.c"
     break;
 
   case 21: /* appl: vars '(' appl ')'  */
-#line 137 "make-tree.y"
+#line 141 "make-tree.y"
 {
   node *n = make_node('&');
   add_child(n,(yyvsp[-3].vars),'l');
   add_child(n,(yyvsp[-1].appl),'r');
   (yyval.appl) = n;
 }
-#line 1545 "make-tree.tab.c"
+#line 1548 "make-tree.tab.c"
     break;
 
   case 22: /* appl: vars abst  */
-#line 145 "make-tree.y"
+#line 149 "make-tree.y"
 {
   node *n = make_node('&');
   add_child(n,(yyvsp[-1].vars),'l');
   add_child(n,(yyvsp[0].abst),'r');
   (yyval.appl) = n;
 }
-#line 1556 "make-tree.tab.c"
+#line 1559 "make-tree.tab.c"
     break;
 
   case 23: /* appl: appl vars  */
-#line 153 "make-tree.y"
+#line 157 "make-tree.y"
 {
   node *n = make_node('&');
   add_child(n,(yyvsp[-1].appl),'l');
   add_child(n,(yyvsp[0].vars),'r');
   (yyval.appl) = n;
 }
-#line 1567 "make-tree.tab.c"
+#line 1570 "make-tree.tab.c"
     break;
 
   case 24: /* appl: '(' abst ')' vars  */
-#line 161 "make-tree.y"
+#line 165 "make-tree.y"
 {
   node *n = make_node('&');
   add_child(n,(yyvsp[-2].abst),'l');
   add_child(n,(yyvsp[0].vars),'r');
   (yyval.appl) = n;
 }
-#line 1578 "make-tree.tab.c"
+#line 1581 "make-tree.tab.c"
     break;
 
   case 25: /* vars: VAR  */
-#line 169 "make-tree.y"
+#line 173 "make-tree.y"
            {(yyval.vars) = make_node((yyvsp[0].VAR));}
-#line 1584 "make-tree.tab.c"
+#line 1587 "make-tree.tab.c"
     break;
 
   case 26: /* vars: '(' vars ')'  */
-#line 170 "make-tree.y"
+#line 174 "make-tree.y"
                {(yyval.vars) = (yyvsp[-1].vars);}
-#line 1590 "make-tree.tab.c"
+#line 1593 "make-tree.tab.c"
     break;
 
 
-#line 1594 "make-tree.tab.c"
+#line 1597 "make-tree.tab.c"
 
       default: break;
     }
@@ -1814,7 +1817,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 173 "make-tree.y"
+#line 177 "make-tree.y"
 
 
 int
@@ -1825,7 +1828,7 @@ yylex (void)
   /* Ignore white space, get first nonwhite character.  */
   c = fgetc(file);
 
-  while (c == ' ' || c == '\t'){
+  while (c == ' ' || c == '\t' ){
     c = fgetc(file);
     continue;
   }
@@ -1865,6 +1868,7 @@ main (int argc, char const* argv[])
   } else {
     printf("Args are invalid\n");
   }
+  fclose(file); 
 
   /* Enable parse traces on option -p.  */
   for (int i = 1; i < argc; ++i)

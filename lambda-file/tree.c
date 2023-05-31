@@ -11,7 +11,7 @@ void set_symbol(node *x, char c)
 node *make_node(char c)
 {
 	node *n = (node *)malloc(sizeof(node));
-	n->prnt = &home;
+	n->prnt = head;
 	n->r = &terminal;
 	n->l = &terminal;
 	n->symbol = c;
@@ -128,16 +128,16 @@ void copy_tree(node *dest, node *src)
 	}
 }
 
-/* This func make the demo tree whose root is home*/
+/* This func make the demo tree whose root is head*/
 void test_tree()
 {
 	/* (((e)c)a(d))$(b(f)) */
-	add_child_char(&home, 'a', 'l');
-	add_child_char(&home, 'b', 'r');
-	add_child_char(home.l, 'c', 'l');
-	add_child_char(home.l, 'd', 'r');
-	add_child_char((home.l)->r, 'e', 'l');
-	add_child_char(home.r, 'f', 'r');
+	add_child_char(head, 'a', 'l');
+	add_child_char(head, 'b', 'r');
+	add_child_char(head->l, 'c', 'l');
+	add_child_char(head->l, 'd', 'r');
+	add_child_char((head->l)->r, 'e', 'l');
+	add_child_char(head->r, 'f', 'r');
 }
 //
 // int main()

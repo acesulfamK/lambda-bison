@@ -9,7 +9,7 @@ typedef struct Node
     char symbol;
 } node;
 
-extern node home;
+extern node *head;
 extern node terminal;
 
 char *char2string(char x);
