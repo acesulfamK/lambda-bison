@@ -11,6 +11,8 @@ C言語のパーサージェネレーターBisonを用いて、ラムダ計算�
 
 # ラムダ計算のBNFを考える
 
+## 理論的な定義
+
 ラムダ計算式を生成する構文をBNF記法で表すことを考える。数学的な観点からよく知られている規則は以下のようなものである。
 
 ```
@@ -30,15 +32,45 @@ C言語のパーサージェネレーターBisonを用いて、ラムダ計算�
     abc
 ```
 
+## ラムダ計算機への要請
+
+そこで、今回のラムダ計算機では主に以下のような構文の柔軟性が要請される。
+
+## 要請を満たすBNF記法
+
 そこで、括弧にも対処したラムダ計算の構文木を考えたところ、以下のようなものが満たすとわかった。
 
-expr :: = ( expr )
-    | VAR
-    | lfex expr 
-    | L abv . expr
-lfex ::= expr
-abv ::= VAR abv
-    | VAR
+
+```
+<expr> ::= <abst> | <appl> | <vars>
+
+<abst> ::= '(' <abst> ')' 
+    | '@' <abstvars> '.' <abst> 
+    | '@' <abstvars> '.' <appl> 
+    | '@' <abstvars> '.' <vars>
+
+<abstvars> ::= VAR 
+    | <abstvars> VAR
+
+<appl> ::= '(' <appl> ')' 
+    | <vars> <vars> 
+    | <abst> <abst> 
+    | <appl> <abst> 
+    | '(' <abst> ')' <appl> 
+    | <vars> '(' <appl> ')' 
+    | <vars> <abst> 
+    | <appl> <vars> 
+    | '(' <abst> ')' <vars>
+
+<vars> ::= VAR | '(' <vars> ')'
+```
+
+<expr>: ラムダ計算の式を表します。
+<abst>: ラムダ抽象を表します。
+<abstvars>: ラムダ抽象の引数リストを表します。
+<appl>: 関数適用を表します。
+<vars>: 変数を表します。
+
 
 
 # ファイル構成
