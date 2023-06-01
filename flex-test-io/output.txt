@@ -1,0 +1,7 @@
+kind = 2, string = 'int' length = 3
+kind = 2, string = 'i' length = 1
+Illegal character : ';'
+kind = 2, string = 'i' length = 1
+Illegal character : '='
+kind = 1, string = '123' length = 3 value = 123
+Illegal character : ';'
